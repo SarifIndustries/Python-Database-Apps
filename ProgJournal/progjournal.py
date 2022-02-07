@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-########################################
-##  PROGRAMMING JOURNAL DATABASE APP  ##
-########################################
+#======================================#
+#=  PROGRAMMING JOURNAL DATABASE APP  =#
+#======================================#
 
-from database import storage_add, storage_get
+from database import storage_add, storage_get, create_table_if_not_exists
 
 greetings_text = "=" * 10 + "  Welcome to programming journal app  " + "=" * 10
 
@@ -25,14 +25,15 @@ def prompt_new_entry():
 
 def show_all_entries():
 	print()
-	entries = storage_get()
-	for entry in entries:
-		print(f"[{entry['date']}]\n{entry['content']}\n\n\t")
+	cursor = storage_get()
+	for entry in cursor:
+		print(f"[{entry['date_stamp']}]\n{entry['content']}\n\n\t")
 
 
 #===================== MAIN =====================
 
 def main():
+	create_table_if_not_exists()
 	print(greetings_text)
 	while (user_input := input(menu_text)) != "3":
 		if user_input == "1":
