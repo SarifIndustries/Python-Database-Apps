@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+########################################
+##  PROGRAMMING JOURNAL DATABASE APP  ##
+########################################
+
+from database import storage_add, storage_get
+
+greetings_text = "=" * 10 + "  Welcome to programming journal app  " + "=" * 10
+
+menu_text = """
+[ Please select option ]
+1. Add new entry for today.
+2. View entries.
+3. Exit.
+
+Your selection: """
+
+
+def prompt_new_entry():
+	date = input("Date: ")
+	content = input("Content: ")
+	storage_add(date=date, content=content)
+
+
+def show_all_entries():
+	print()
+	entries = storage_get()
+	for entry in entries:
+		print(f"[{entry['date']}]\n{entry['content']}\n\n\t")
+
+
+#===================== MAIN =====================
+
+def main():
+	print(greetings_text)
+	while (user_input := input(menu_text)) != "3":
+		if user_input == "1":
+			prompt_new_entry()
+		elif user_input == "2":
+			show_all_entries()
+		else:
+			print("Wrong option, please try again.")
+
+#================================================
+
+if __name__ == "__main__":
+	main()
