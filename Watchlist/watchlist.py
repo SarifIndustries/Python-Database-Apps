@@ -14,7 +14,9 @@ Please select one of the following options:
 3) View all movies
 4) Watch a movie
 5) View watched movies.
-6) Exit.
+6) Search movies.
+7) Add new user.
+8) Exit.
 
 Your selection: """
 welcome = "Welcome to the watchlist app!"
@@ -28,29 +30,36 @@ def prompt_new_movie():
 
 def print_movies(heading, movies):
     print(f"--- {heading} ---")
-    for movie in movies:
-        date_time = datetime.datetime.fromtimestamp(movie[1])
+    for _id, title, release_date in movies:
+        date_time = datetime.datetime.fromtimestamp(release_date)
         h_date = date_time.strftime("%d %b %Y")
-        print(f"{movie[0]} (in {h_date})")
-    print("-----------------------")
-
-def print_watched_movies(username, movies):
-    print(f"--- {username}'s watched movies ---")
-    for movie in movies:
-        print(f"{movie[1]}")
+        print(f"{_id}: {title} (in {h_date})")
     print("-----------------------")
 
 def prompt_watch_movie():
     username = input("Username: ")
-    title = input("Enter movie title you've watched: ")
-    database.watch_movie(username, title)
+    movie_id = input("Enter movie id you've watched: ")
+    database.watch_movie(username, movie_id)
+
+def prompt_new_user():
+    username = input("New user name: ")
+    database.add_user(username)
+
+def prompt_search_movies():
+    search_text = input("Search for: ")
+    movies = database.search_movies(search_text)
+    print()
+    if movies:
+        print_movies("Search results", movies)
+    else:
+        print("No movies found.")
 
 #===================== MAIN =====================
 
 def main():
     database.create_tables()
     print(welcome)
-    while (user_input := input(menu)) != "6":
+    while (user_input := input(menu)) != "8":
         print()
         if user_input == "1":           # Add new movie
             prompt_new_movie()
@@ -66,7 +75,11 @@ def main():
             username = input("Username: ")
             print()
             movies = database.get_watched_movies(username)
-            print_watched_movies(username, movies)
+            print_movies(f"{username}'s watched movies", movies)
+        elif user_input == "6":         # Search movies
+            prompt_search_movies()
+        elif user_input == "7":         # Add new user
+            prompt_new_user()
         else:
             print("Invalid input, please try again!")
 
