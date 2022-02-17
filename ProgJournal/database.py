@@ -28,12 +28,14 @@ def storage_add_insecure(date: str, content: str):
 	connection.execute(query)
 	connection.commit()
 
+
 # Prevents SQL Injection
 def storage_add(date: str, content: str):
 	query = "INSERT INTO entries (date_stamp, content) VALUES (?, ?);"
 	params_cortage = (date, content)
 	connection.execute(query, params_cortage)
 	connection.commit()
+
 
 def storage_get():
 	query = "SELECT date_stamp, content FROM entries"
