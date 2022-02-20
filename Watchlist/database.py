@@ -22,7 +22,7 @@ CREATE_USERS_TABLE = """CREATE TABLE IF NOT EXISTS users (
 CREATE_WATCHLIST_TABLE = """CREATE TABLE IF NOT EXISTS watchlist (
     user_username TEXT,
     movies_id INTEGER,
-    FOREIGN KEY(user_username) REFERENCES user(username),
+    FOREIGN KEY(user_username) REFERENCES users(username),
     FOREIGN KEY(movies_id) REFERENCES movies(id)
 );"""
 
