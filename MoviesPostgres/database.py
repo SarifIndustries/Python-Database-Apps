@@ -55,6 +55,16 @@ DELETE_MOVIE = "DELETE FROM movies WHERE title = %s;"
 global connection
 
 
+# Decorator
+def palisade(func):
+    def cursor_function(*args, **kwargs):
+        with connection:
+            with connection.cursor() as cursor:
+                kwargs["cursor"] = cursor
+                return func(*args, **kwargs)
+    return cursor_function
+
+
 def establish_connection():
     global connection
     dotenv.load_dotenv()
@@ -75,44 +85,38 @@ def create_tables():
             cursor.execute(CREATE_RELEASE_DATE_INDEX)
 
 
-def add_movie(title, release_timestamp):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_MOVIE, (title, release_timestamp))
+@palisade
+def add_movie(title, release_timestamp, cursor=None):
+    cursor.execute(INSERT_MOVIE, (title, release_timestamp))
 
 
-def add_user(username):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_USER, (username,))
+@palisade
+def add_user(username, cursor=None):
+    cursor.execute(INSERT_USER, (username,))
 
 
-def get_movies(upcoming=False):
-    with connection:
-        with connection.cursor() as cursor:
-            if upcoming:
-                today = datetime.datetime.today().timestamp()
-                cursor.execute(SELECT_UPCOMING_MOVIES, (today,))
-            else:
-                cursor.execute(SELECT_ALL_MOVIES)
-            return cursor.fetchall()
+@palisade
+def get_movies(upcoming=False, cursor=None):
+    if upcoming:
+        today = datetime.datetime.today().timestamp()
+        cursor.execute(SELECT_UPCOMING_MOVIES, (today,))
+    else:
+        cursor.execute(SELECT_ALL_MOVIES)
+    return cursor.fetchall()
 
 
-def watch_movie(username, movie_id):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(INSERT_MOVIE_WATCHED, (username, movie_id))
+@palisade
+def watch_movie(username, movie_id, cursor=None):
+    cursor.execute(INSERT_MOVIE_WATCHED, (username, movie_id))
 
 
-def get_watched_movies(username):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(SELECT_WATCHED_MOVIES, (username,))
-            return cursor.fetchall()
+@palisade
+def get_watched_movies(username, cursor=None):
+    cursor.execute(SELECT_WATCHED_MOVIES, (username,))
+    return cursor.fetchall()
 
 
-def search_movies(search_text):
-    with connection:
-        with connection.cursor() as cursor:
-            cursor.execute(SEARCH_MOVIES, ("%" + search_text + "%",))
-            return cursor.fetchall()
+@palisade
+def search_movies(search_text, cursor=None):
+    cursor.execute(SEARCH_MOVIES, ("%" + search_text + "%",))
+    return cursor.fetchall()
